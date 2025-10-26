@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .app-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .clear-all-btn {
+            background: #dc3545 !important;
+        }
+
+        .clear-all-btn:hover {
+            background: #c82333 !important;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .close:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .history-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .history-expression {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .history-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .load-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .load-btn:hover {
+            background: #218838;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-history-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-stats {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Dark theme for modal */
+        [data-theme="dark"] .modal-content {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        [data-theme="dark"] .history-item {
+            background: #34495e;
+            border-left-color: #667eea;
+        }
+
+        [data-theme="dark"] .history-name {
+            color: white;
+        }
+
+        [data-theme="dark"] .history-meta {
+            color: #bbb;
+        }
+
+        [data-theme="dark"] .modal-footer {
+            border-top-color: #4a5568;
+        }
+
+        [data-theme="dark"] .history-stats {
+            color: #bbb;
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            .modal-header {
+                padding: 15px;
+            }
+            
+            .modal-title {
+                font-size: 20px;
+            }
+            
+            .history-item {
+                padding: 12px;
+            }
+            
+            .history-actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        .calculator {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .calculator-display {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: right;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .calc-btn:active {
+            transform: translateY(0);
+        }
+
+        .calc-btn.operator {
+            background: #667eea;
+            color: white;
+        }
+
+        .calc-btn.equals {
+            background: #28a745;
+            color: white;
+        }
+
+        .calc-btn.function {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .calc-btn.zero {
+            grid-column: span 2;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .scientific-functions {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .scientific-functions.active {
+            display: grid;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .history-display {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+            min-height: 30px;
+        }
+
+        /* Dark theme */
+        [data-theme="dark"] {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+
+        [data-theme="dark"] .app-container {
+            background: #2c3e50;
+            color: white;
+        }
+
+        [data-theme="dark"] .user-info,
+        [data-theme="dark"] .login-form,
+        [data-theme="dark"] .calculator {
+            background: #34495e;
+        }
+
+        [data-theme="dark"] input[type="text"] {
+            background: #2c3e50;
+            color: white;
+            border-color: #4a5568;
+        }
+
+        [data-theme="dark"] .calc-btn {
+            background: #4a5568;
+            color: white;
+        }
+
+        [data-theme="dark"] .mode-btn {
+            background: #4a5568;
+            color: white;
+            border-color: #667eea;
+        }
+
+        [data-theme="dark"] .history-display {
+            background: #4a5568;
+            color: #ccc;
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 20px;
+            }
+
+            .calc-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .calculator-display {
+                font-size: 20px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+
+    <div class="app-container">
+        <div class="app-header">
+            <h1 class="app-title">🧮 Calculator App</h1>
+        </div>
+
+        <!-- Login Section -->
+        <div id="login-section">
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" maxlength="80">
+                </div>
+                <button class="btn btn-primary" onclick="login()" style="width: 100%;">Login</button>
+                <div id="login-message"></div>
+            </div>
+        </div>
+
+        <!-- User Info Section -->
+        <div id="user-section" style="display: none;">
+            <div class="user-info">
+                <div>Welcome, <strong id="current-username"></strong>!</div>
+                <div class="button-row">
+                    <button class="btn btn-secondary" onclick="viewHistory()">📊 View History</button>
+                    <button class="btn btn-secondary clear-all-btn" onclick="clearAllHistory()">🗑️ Clear All</button>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculator Section -->
+        <div id="calculator-section" style="display: none;">
+            <div class="calculator"></div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('basic')">Basic</button>
+                <button class="mode-btn" onclick="setMode('scientific')">Scientific</button>
+            </div>
+
+            <div class="scientific-functions" id="scientific-functions">
+                <button class="calc-btn function" onclick="addFunction('sin')">sin</button>
+                <button class="calc-btn function" onclick="addFunction('cos')">cos</button>
+                <button class="calc-btn function" onclick="addFunction('tan')">tan</button>
+                <button class="calc-btn function" onclick="addFunction('log')">log</button>
+                <button class="calc-btn function" onclick="addFunction('ln')">ln</button>
+                <button class="calc-btn function" onclick="addFunction('sqrt')">√</button>
+                <button class="calc-btn function" onclick="addConstant('pi')">π</button>
+                <button class="calc-btn function" onclick="addConstant('e')">e</button>
+                <button class="calc-btn function" onclick="addOperator('^')">x^y</button>
+            </div>
+
+            <div class="history-display" id="history">Ready</div>
+            <div class="calculator-display" id="display">0</div>
+
+            <div class="calculator-buttons">
+                <button class="calc-btn function" onclick="clearAll()">C</button>
+                <button class="calc-btn function" onclick="deleteLast()">⌫</button>
+                <button class="calc-btn function" onclick="clearEntry()">CE</button>
+                <button class="calc-btn operator" onclick="addOperator('/')">÷</button>
+
+                <button class="calc-btn" onclick="addNumber('7')">7</button>
+                <button class="calc-btn" onclick="addNumber('8')">8</button>
+                <button class="calc-btn" onclick="addNumber('9')">9</button>
+                <button class="calc-btn operator" onclick="addOperator('*')">×</button>
+
+                <button class="calc-btn" onclick="addNumber('4')">4</button>
+                <button class="calc-btn" onclick="addNumber('5')">5</button>
+                <button class="calc-btn" onclick="addNumber('6')">6</button>
+                <button class="calc-btn operator" onclick="addOperator('-')">−</button>
+
+                <button class="calc-btn" onclick="addNumber('1')">1</button>
+                <button class="calc-btn" onclick="addNumber('2')">2</button>
+                <button class="calc-btn" onclick="addNumber('3')">3</button>
+                <button class="calc-btn operator" onclick="addOperator('+')">+</button>
+
+                <button class="calc-btn zero" onclick="addNumber('0')">0</button>
+                <button class="calc-btn" onclick="addNumber('.')">.</button>
+                <button class="calc-btn equals" onclick="calculate()">=</button>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+
+            <div class="button-row">
+                <button class="btn btn-secondary" onclick="saveCalculation()" id="save-btn" style="display: none;">💾
+                    Save Result</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📊 Calculation History</h2>
+                <button class="close" onclick="closeHistoryModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="historyModalBody">
+                <!-- History items will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <div class="history-stats" id="historyStats">
+                    <!-- Stats will be shown here -->
+                </div>
+                <button class="btn btn-secondary clear-all-btn" onclick="clearAllHistoryFromModal()">🗑️ Clear All</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentExpression = '';
+        let calculatorMode = 'basic';
+        let currentTheme = 'light';
+        let lastResult = null;
+
+        // Authentication functions
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const messageDiv = document.getElementById('login-message');
+
+            if (!username) {
+                messageDiv.innerHTML = '<div class="error-message">Please enter a username</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: username })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    currentUser = data.user;
+                    document.getElementById('current-username').textContent = currentUser.username;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('user-section').style.display = 'block';
+                    document.getElementById('calculator-section').style.display = 'block';
+                    messageDiv.innerHTML = '';
+                } else {
+                    messageDiv.innerHTML = `<div class="error-message">${data.message}</div>`;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="error-message">Connection error: ${error.message}</div>`;
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('user-section').style.display = 'none';
+            document.getElementById('calculator-section').style.display = 'none';
+            document.getElementById('username').value = '';
+            clearAll();
+        }
+
+        // Calculator functions
+        function addNumber(num) {
+            const display = document.getElementById('display');
+            if (display.textContent === '0' || display.textContent === 'Error') {
+                display.textContent = num;
+            } else {
+                display.textContent += num;
+            }
+            currentExpression = display.textContent;
+            updateHistory();
+        }
+
+        function addOperator(op) {
+            const display = document.getElementById('display');
+            const lastChar = display.textContent.slice(-1);
+
+            // Don't add operator if last character is already an operator
+            if (!['+', '-', '*', '/', '^', '×', '÷', '−'].includes(lastChar)) {
+                display.textContent += op;
+                currentExpression = display.textContent.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+                updateHistory();
+            }
+        }
+
+        function addFunction(func) {
+            const display = document.getElementById('display');
+            if (display.textContent === '0' || display.textContent === 'Error') {
+                display.textContent = func + '(';
+            } else {
+                display.textContent += func + '(';
+            }
+            currentExpression = display.textContent;
+            updateHistory();
+        }
+
+        function addConstant(constant) {
+            const display = document.getElementById('display');
+            const value = constant === 'pi' ? 'π' : 'e';
+
+            if (display.textContent === '0' || display.textContent === 'Error') {
+                display.textContent = value;
+            } else {
+                display.textContent += value;
+            }
+            currentExpression = display.textContent;
+            updateHistory();
+        }
+
+        function clearAll() {
+            document.getElementById('display').textContent = '0';
+            document.getElementById('history').textContent = 'Ready';
+            document.getElementById('error-message').textContent = '';
+            document.getElementById('save-btn').style.display = 'none';
+            currentExpression = '';
+            lastResult = null;
+        }
+
+        async function saveCalculation() {
+            if (!currentUser || !lastResult) {
+                return;
+            }
+
+            const name = prompt('Enter a name for this calculation (optional):');
+
+            try {
+                const response = await fetch('/api/calculations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: currentUser.username,
+                        expression: lastResult.expression,
+                        result: lastResult.result.toString(),
+                        custom_name: name || null,
+                        calculation_type: calculatorMode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert('✅ Calculation saved successfully!');
+                    document.getElementById('save-btn').style.display = 'none';
+                } else {
+                    alert('❌ Failed to save calculation: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error saving calculation: ' + error.message);
+            }
+        }
+
+        // History viewing function
+        async function viewHistory() {
+            if (!currentUser) {
+                alert('Please login first!');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/calculations/${currentUser.username}`);
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    displayHistoryModal(data.calculations, data.total);
+                } else {
+                    alert('❌ Failed to load history: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error loading history: ' + error.message);
+            }
+        }
+
+        function displayHistoryModal(calculations, total) {
+            const modal = document.getElementById('historyModal');
+            const modalBody = document.getElementById('historyModalBody');
+            const statsDiv = document.getElementById('historyStats');
+            
+            // Update stats
+            statsDiv.textContent = `Total: ${total} calculations`;
+            
+            // Clear previous content
+            modalBody.innerHTML = '';
+            
+            if (calculations.length === 0) {
+                modalBody.innerHTML = `
+                    <div class="empty-history">
+                        <div class="empty-history-icon">📝</div>
+                        <h3>No saved calculations found</h3>
+                        <p>Try doing some calculations and saving them first!</p>
+                    </div>
+                `;
+            } else {
+                calculations.forEach((calc, index) => {
+                    const date = new Date(calc.created_at).toLocaleDateString();
+                    const time = new Date(calc.created_at).toLocaleTimeString();
+                    const name = calc.custom_name || 'Unnamed Calculation';
+                    
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <div class="history-name">${name}</div>
+                        <div class="history-expression">${calc.expression} = ${calc.result}</div>
+                        <div class="history-meta">
+                            <span>${calc.calculation_type} • ${date} ${time}</span>
+                            <div class="history-actions">
+                                <button class="action-btn load-btn" onclick="loadCalculation('${calc.result}', '${calc.expression}', '${name}')">
+                                    📥 Load
+                                </button>
+                                <button class="action-btn delete-btn" onclick="deleteCalculationFromModal(${calc.id}, '${name}')">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    modalBody.appendChild(historyItem);
+                });
+            }
+            
+            // Show modal
+            modal.style.display = 'block';
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        function loadCalculation(result, expression, name) {
+            document.getElementById('display').textContent = result;
+            currentExpression = result;
+            document.getElementById('history').textContent = `${expression} = ${result}`;
+            closeHistoryModal();
+            alert(`✅ Loaded: ${name}\\n${expression} = ${result}`);
+        }
+
+        async function deleteCalculationFromModal(calcId, calcName) {
+            const confirmDelete = confirm(`🗑️ Delete "${calcName}"?\\n\\nThis action cannot be undone!`);
+            
+            if (!confirmDelete) return;
+
+            try {
+                const response = await fetch(`/api/calculations/${currentUser.username}/${calcId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert(`✅ "${calcName}" deleted successfully!`);
+                    // Refresh the modal
+                    viewHistory();
+                } else {
+                    alert('❌ Failed to delete calculation: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error deleting calculation: ' + error.message);
+            }
+        }
+
+        async function clearAllHistoryFromModal() {
+            if (!currentUser) {
+                alert('Please login first!');
+                return;
+            }
+
+            const confirmClear = confirm('🗑️ Delete ALL saved calculations?\\n\\nThis will permanently delete your entire calculation history.\\n\\nThis action cannot be undone!');
+            
+            if (!confirmClear) return;
+
+            try {
+                const response = await fetch(`/api/calculations/${currentUser.username}/clear-all`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert(`✅ Successfully deleted ${data.deleted_count} calculations!\\n\\nYour calculation history is now empty.`);
+                    closeHistoryModal();
+                } else {
+                    alert('❌ Failed to clear history: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error clearing history: ' + error.message);
+            }
+        }
+
+        // Delete calculation function
+        async function deleteCalculation(calcId, calcName) {
+            try {
+                const response = await fetch(`/api/calculations/${currentUser.username}/${calcId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert(`✅ "${calcName}" deleted successfully!`);
+
+                    const viewAgain = confirm('Would you like to view your updated history?');
+                    if (viewAgain) {
+                        setTimeout(() => viewHistory(), 500);
+                    }
+                } else {
+                    alert('❌ Failed to delete calculation: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error deleting calculation: ' + error.message);
+            }
+        }
+
+        // Clear all history function
+        async function clearAllHistory() {
+            if (!currentUser) {
+                alert('Please login first!');
+                return;
+            }
+
+            const confirmClear = confirm('🗑️ Delete ALL saved calculations?\\n\\nThis will permanently delete your entire calculation history.\\n\\nThis action cannot be undone!');
+
+            if (!confirmClear) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/calculations/${currentUser.username}/clear-all`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert(`✅ Successfully deleted ${data.deleted_count} calculations!\\n\\nYour calculation history is now empty.`);
+                } else {
+                    alert('❌ Failed to clear history: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error clearing history: ' + error.message);
+            }
+        }
+
+        function clearEntry() {
+            document.getElementById('display').textContent = '0';
+            currentExpression = '';
+            updateHistory();
+        }
+
+        function deleteLast() {
+            const display = document.getElementById('display');
+            if (display.textContent.length > 1) {
+                display.textContent = display.textContent.slice(0, -1);
+            } else {
+                display.textContent = '0';
+            }
+            currentExpression = display.textContent;
+            updateHistory();
+        }
+
+        function updateHistory() {
+            const history = document.getElementById('history');
+            if (currentExpression && currentExpression !== '0') {
+                history.textContent = currentExpression;
+            } else {
+                history.textContent = 'Ready';
+            }
+        }
+
+        async function calculate() {
+            const display = document.getElementById('display');
+            const errorDiv = document.getElementById('error-message');
+
+            if (!currentExpression || currentExpression === '0') {
+                return;
+            }
+
+            try {
+                // Prepare expression for API
+                let expression = currentExpression
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/−/g, '-')
+                    .replace(/π/g, 'pi');
+
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        expression: expression,
+                        calculation_type: calculatorMode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const result = data.result;
+                    display.textContent = result;
+                    document.getElementById('history').textContent = `${currentExpression} = ${result}`;
+                    lastResult = {
+                        expression: currentExpression,
+                        result: result
+                    };
+                    currentExpression = result.toString();
+                    errorDiv.textContent = '';
+
+                    // Show save button if user is logged in
+                    if (currentUser) {
+                        document.getElementById('save-btn').style.display = 'inline-block';
+                    }
+                } else {
+                    display.textContent = 'Error';
+                    errorDiv.textContent = data.message || 'Calculation error';
+                    setTimeout(() => {
+                        clearAll();
+                    }, 3000);
+                }
+            } catch (error) {
+                display.textContent = 'Error';
+                errorDiv.textContent = 'Connection error';
+                setTimeout(() => {
+                    clearAll();
+                }, 3000);
+            }
+        }
+
+        // Mode switching
+        function setMode(mode) {
+            calculatorMode = mode;
+            const buttons = document.querySelectorAll('.mode-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const scientificFunctions = document.getElementById('scientific-functions');
+            if (mode === 'scientific') {
+                scientificFunctions.classList.add('active');
+            } else {
+                scientificFunctions.classList.remove('active');
+            }
+        }
+
+        // Theme functions
+        function toggleTheme() {
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            const themeButton = document.querySelector('.theme-toggle');
+            themeButton.textContent = theme === 'light' ? '🌙' : '☀️';
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function (event) {
+            const key = event.key;
+
+            if (key >= '0' && key <= '9') {
+                addNumber(key);
+            } else if (key === '.') {
+                addNumber('.');
+            } else if (key === '+') {
+                addOperator('+');
+            } else if (key === '-') {
+                addOperator('−');
+            } else if (key === '*') {
+                addOperator('×');
+            } else if (key === '/') {
+                event.preventDefault();
+                addOperator('÷');
+            } else if (key === 'Enter' || key === '=') {
+                event.preventDefault();
+                calculate();
+            } else if (key === 'Escape') {
+                clearAll();
+            } else if (key === 'Backspace') {
+                event.preventDefault();
+                deleteLast();
+            }
+        });
+
+        // Modal click outside to close
+        window.onclick = function(event) {
+            const modal = document.getElementById('historyModal');
+            if (event.target === modal) {
+                closeHistoryModal();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Calculator App loaded successfully!');
+        });
+    </script>
+</body>
+
+</html>
