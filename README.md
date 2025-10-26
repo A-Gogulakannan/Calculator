@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Calculator App
 
 A modern, responsive calculator web application with both basic and scientific modes.
@@ -139,3 +140,6 @@ calculator-app/
 ## License
 
 This project is open source and available under the MIT License.
+=======
+# Calculator
+>>>>>>> 329a5e628335210861a099688c0639187acf8f7d
