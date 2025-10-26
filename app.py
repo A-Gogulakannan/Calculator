@@ -259,4 +259,17 @@ def health_check():
     return jsonify({"status": "healthy", "message": "Calculator API is running"})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    import os
+    
+    # Get configuration from environment variables
+    debug_mode = os.getenv('FLASK_ENV', 'production') != 'production'
+    port = int(os.getenv('PORT', 5000))
+    host = os.getenv('HOST', '0.0.0.0')
+    
+    print(f"🚀 Starting Calculator App...")
+    print(f"   Environment: {os.getenv('FLASK_ENV', 'production')}")
+    print(f"   Host: {host}")
+    print(f"   Port: {port}")
+    print(f"   Debug: {debug_mode}")
+    
+    app.run(debug=debug_mode, host=host, port=port)
